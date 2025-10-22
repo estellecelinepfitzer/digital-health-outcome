@@ -1,11 +1,29 @@
-# Ignore everything by default
-*
+# ---- System & IDE files ----
+.DS_Store
+.Rhistory
+.RData
+.Rapp.history
+.Ruserdata
+.Rproj.user/
 
-# But not these files:
-!.gitignore
-!Benchmarking_.R
-!DataEngineering.R
-!Predictions.R
-!Hubs.R
-!Predictions_without_LMM_derived_feature.R
+# ---- Temporary or backup files ----
+*_cache/
+*_files/
+*.tmp
+*.bak
+*.log
+*.out
+*.swp
+
+# ---- Old code folders ----
+_old/
+
+# ---- Project-specific folders to ignore ----
+FeatureEngineering/
+ModelDev/
+
+# ---- Optional: large data or output folders (uncomment if needed) ----
+# data/
+# output/
+# results/
 
