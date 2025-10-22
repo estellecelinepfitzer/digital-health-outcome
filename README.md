@@ -1,4 +1,4 @@
-# Digital Health Outcome — Predicting Startup “Success” from Firm, IP, Clinical, and Geography Signals
+# Digital Health Outcome
 
 **Short description.**  
 Reproducible R code to engineer features and build classification models that predict whether a digital-health company achieves a *successful* outcome (IPO/M&A/public) versus *no success* (still private without backing / out of business), using structured firmographics, financing timelines, IP/clinical indicators, and geospatial proximity to VC/company hubs. Feature engineering and models are implemented with the *tidyverse*/*tidymodels* ecosystem, with additional utilities for class imbalance, SHAP/vip explanations, and benchmarking on a fixed or sampled set of companies.
@@ -7,16 +7,17 @@ Reproducible R code to engineer features and build classification models that pr
 
 ## Repository layout
 
+```
 digital-health-outcome/
 ├─ FeatureEngineering/
-│ ├─ DataEngineering.R
-│ └─ Hubs.R
+│  ├─ DataEngineering.R
+│  └─ Hubs.R
 ├─ ModelDev/
-│ ├─ Predictions.R
-│ ├─ Predictions_without_LMM_derived_feature.R
-│ └─ Benchmarking_.R
+│  ├─ Predictions.R
+│  ├─ Predictions_without_LMM_derived_feature.R
+│  └─ Benchmarking_.R
 └─ .gitignore
-
+```
 
 - **FeatureEngineering/DataEngineering.R** — end-to-end data cleaning + feature engineering (CAGR/YoY from `employee_history`, investor counts, financing-timing features, geospatial hub features, missingness flags, correlation filter).  
 - **FeatureEngineering/Hubs.R** — helper logic for hub coordinates/distances.  
@@ -94,20 +95,65 @@ source("ModelDev/Predictions_without_LMM_derived_feature.R")
 
 # 4) Benchmarking (requires test_data & ensemble_preds_weighted)
 source("ModelDev/Benchmarking_.R")
+```
 
-Outputs
-Engineered dataset with derived and geospatial features.
+---
 
-Cross-validated metrics (AUC, etc.).
-Ensemble prediction tibble (ensemble_preds_weighted).
-Optional benchmark table from sampled test cases.
+## Outputs
 
-Reproducibility notes
-Fixed seeds (set.seed(8)) for deterministic sampling.
-Parallel execution via doParallel/future.
-Feature pruning at correlation > 0.9 (toggle inside script).
+- Engineered dataset with derived and geospatial features.  
+- Cross-validated metrics (AUC, etc.).  
+- Ensemble prediction tibble (`ensemble_preds_weighted`).  
+- Optional benchmark table from sampled test cases.
 
-Design rationale
-Two-class outcome simplifies downstream evaluation and interpretability.
-Temporal + spatial signals explicitly engineered (financing lags, hub proximity).
-Transparent ablation quantifies LLM-feature contribution using repeated CV.
+---
+
+## Reproducibility notes
+
+- Fixed seeds (`set.seed(8)`) for deterministic sampling.  
+- Parallel execution via `doParallel`/`future`.  
+- Feature pruning at correlation > 0.9 (toggle inside script).
+
+---
+
+## Design rationale
+
+- **Two-class outcome** simplifies downstream evaluation and interpretability.  
+- **Temporal + spatial signals** explicitly engineered (financing lags, hub proximity).  
+- **Transparent ablation** quantifies LLM-feature contribution using repeated CV.
+
+---
+
+## Citation
+
+If you use this repository, please cite:
+
+> Pfitzer, E. (2025). *Beyond Gut Feel: Predicting Outcomes of Digital Health Companies* GitHub: [estellecelinepfitzer/digital-health-outcome](https://github.com/estellecelinepfitzer/digital-health-outcome)
+
+```bibtex
+@misc{pfitzer2025digitalhealthoutcome,
+  author       = {Estelle Pfitzer, Christoph Kausch, Tobias Kowatsch},
+  title        = {Beyond Gut Feel: Predicting Outcomes of Digital Health Companies},
+  year         = {2025},
+  howpublished = {\url{https://github.com/estellecelinepfitzer/digital-health-outcome}},
+  note         = {main branch, accessed YYYY-MM-DD}
+}
+```
+
+---
+
+## Ethical use & data licensing
+
+- **Data:** Not included; ensure you have rights to any dataset you use.  
+- **Code:** All rights reserved unless otherwise stated. Contact the author for reuse permissions.  
+- **Responsible ML:** Validate external performance before applying in decision contexts.
+
+---
+
+## Maintainer
+
+**Estelle Pfitzer** — initial author and maintainer  
+For inquiries, open a GitHub Issue or contact directly.
+
+---
+
