@@ -1,29 +1,15 @@
-# ---- System & IDE files ----
+# --- Ignore only specific R and Rmd files ---
+
+Benchmarking.R
+DataEngineeringSurvival.R
+PredictionsV1.R
+PredictionV3.R
+SF_Prediction.Rmd
+
+# --- Usual system & RStudio clutter ---
 .DS_Store
 .Rhistory
 .RData
 .Rapp.history
-.Ruserdata
 .Rproj.user/
-
-# ---- Temporary or backup files ----
-*_cache/
-*_files/
-*.tmp
-*.bak
-*.log
-*.out
-*.swp
-
-# ---- Old code folders ----
-_old/
-
-# ---- Project-specific folders to ignore ----
-FeatureEngineering/
-ModelDev/
-
-# ---- Optional: large data or output folders (uncomment if needed) ----
-# data/
-# output/
-# results/
 
