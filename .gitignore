@@ -1,0 +1,11 @@
+# Ignore everything by default
+*
+
+# But not these files:
+!.gitignore
+!Benchmarking_.R
+!DataEngineering.R
+!Predictions.R
+!Hubs.R
+!Predictions_without_LMM_derived_feature.R
+
