@@ -1,6 +1,6 @@
 # ============================================================
 # Repeated CV: With vs Without LLM features
-# Main: threshold-free (AUC) comparison only
+# Main: AUC
 # Supplement (optional): 95% specificity sensitivity + Decision curve
 # ============================================================
 

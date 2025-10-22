@@ -29,7 +29,7 @@ library(readr)
 # 1. Load and Prepare Dataset
 # -------------------------------
 
-file_path <- "/Users/estellepfitzer/Desktop/PhD/1. Papers/3. Data Model/02 Data/EP_PitchBook_Cleaned_2025_06.csv"
+file_path <- "/Users/estellepfitzer/Desktop/PhD/1. Papers/3. Data Model/02 Data/clean_dataset.csv"
 df_raw <- read_csv(file_path)
 
 # Clean column names (lowercase, underscores)
@@ -81,65 +81,12 @@ df_raw <- df_raw %>%
   select(-ownership_status)
 
 
-# -------------------------------
-# 2. Drop Irrelevant or Unwanted Columns
-# -------------------------------
-drop_cols <- c(
-  "company_id", "latest_note", "latest_note_author",
-  "company_former_name", "company_also_known_as", "company_legal_name",
-  "registration_number", "company_registry", "competitors", "pb_id",
-  "description", "primary_industry_sector", "primary_industry_group",
-  "primary_industry_code", "all_industries", "verticals", "keywords",
-  "company_financing_status", "business_status",
-  "universe", "website", "linked_in_url", "exchange", "ticker",
-  "parent_company", "daily_updates", "weekly_updates",
-  "gross_profit", "net_income", "enterprise_value",
-  "ebit", "market_cap", "net_debt",
-  "primary_contact_pb_id", "primary_contact",
-  "primary_contact_title", "primary_contact_email", "primary_contact_phone",
-  "hq_location", "hq_address_line_1", "hq_address_line_2",
-  "hq_state_province", "hq_post_code",
-  "hq_phone", "hq_fax", "hq_email", 
-  "hq_global_sub_region", "financing_status_note", "active_investors",
-  "acquirers", "other_investors", "active_investors_websites",
-  "former_investors_websites", "other_investors_websites", "general_services",
-  "services_on_a_deal", "first_financing_size_status",
-  "first_financing_valuation_status", "first_financing_deal_type", 
-  "first_financing_deal_type_2", "first_financing_deal_type_3", 
-  "first_financing_status", "last_financing_size", "last_financing_size_status", 
-  "last_financing_valuation", "last_financing_valuation_status", 
-  "last_financing_deal_type", "last_financing_deal_type_2", 
-  "last_financing_deal_type_3", "last_financing_deal_class", 
-  "last_financing_debt_date", "last_financing_debt_size", 
-  "last_financing_debt", "last_financing_status", 
-  "growth_rate", "growth_rate_percentile", "growth_rate_change",
-  "growth_rate_percent_change", "web_growth_rate", "web_growth_rate_percentile",
-  "size_multiple","size_multiple_percentile", "size_multiple_change",
-  "size_multiple_percent_change", "web_size_multiple", 
-  "web_size_multiple_percentile", "profile_data_source", 
-  "opportunity_score", "success_class", "success_probability",
-  "no_exit_probability", "predicted_exit_type", "ipo_probability", 
-  "m_a_probability", "last_known_valuation", "last_known_valuation_deal_type",
-  "emerging_spaces", "clinical_trials_matching_criteria",
-  "last_valuation_step_up", "view_company_online", "last_updated_date", "companies",
-  "similar_web_size_multiple", "similar_web_size_multiple_percentile",
-  "similar_web_unique_visitors", "similar_web_unique_visitors_change",
-  "similar_web_unique_visitors_percent_change",
-  "similar_web_growth_rate", "similar_web_growth_rate_percentile", "majestic_size_multiple",
-  "majestic_size_multiple_percentile", 
-  "majestic_referring_domains_change", "majestic_referring_domains_percent_change",
-  "majestic_growth_rate", "majestic_referring_domains", "majestic_growth_rate_percentile",
-  "top_cpc_codes","first_financing_debt", "intended_user", "clinical_domain"
-)
-
-df <- df_raw %>%
-  select(-any_of(drop_cols))
 
 # -------------------------------
-# 3. Custom Feature Engineering
+# 2. Custom Feature Engineering
 # -------------------------------
 
-# --- 3A. Functions to compute employee CAGR & YoY growth ---
+# --- 2A. Functions to compute employee CAGR & YoY growth ---
 compute_cagr <- function(history) {
   if (is.na(history)) return(NA_real_)
   # history example: "2018:100, 2019:120, 2020:150"
@@ -187,7 +134,7 @@ df <- df %>%
   ) %>%
   select(-employee_history)
 
-# --- 3B. Investor counts ---
+# --- 2B. Investor counts ---
 df <- df %>%
   mutate(
     investor_number = case_when(
@@ -202,7 +149,7 @@ df <- df %>%
   ) %>%
   select(-number_active_investors, -former_investors)
 
-# --- 3C. Replace NA with 0 in specific numeric columns ---
+# --- 2C. Replace NA with 0 in specific numeric columns ---
 df <- df %>%
   mutate(across(
     c(total_clinical_trials, total_patent_documents, total_patent_families, 
@@ -210,7 +157,7 @@ df <- df %>%
     ~replace(., is.na(.), 0))
   )
 
-# --- 3D. Convert/clean up 'fiscal_year' from 'fiscal_period' ---
+# --- 2D. Convert/clean up 'fiscal_year' from 'fiscal_period' ---
 df <- df %>%
   mutate(
     fiscal_year = case_when(
@@ -221,20 +168,8 @@ df <- df %>%
   ) %>%
   select(-fiscal_period)
 
-# --- 3E. Remove outdated revenue/EBITDA if last_known_valuation_date < fiscal_year ---
-df <- df %>%
-  mutate(
-    is_outdated = if_else(
-      !is.na(last_known_valuation_date) & !is.na(fiscal_year) &
-        year(last_known_valuation_date) < fiscal_year,
-      TRUE, FALSE
-    ),
-    revenue = if_else(is_outdated, NA_real_, revenue),
-    ebitda  = if_else(is_outdated, NA_real_, ebitda)
-  ) %>%
-  select(-last_known_valuation_date, -fiscal_year, -is_outdated)
 
-# --- 3F. Financing timing features ---
+# --- 2E. Financing timing features ---
 df <- df %>%
   filter(!is.na(year_founded)) %>%
   mutate(
@@ -254,8 +189,8 @@ df <- df %>%
   ) %>%
   select(-first_financing_date, -last_financing_date)
 
-# --- 3G. Hub Features ---
-# --- 1. Define VC and Company Hubs ---
+# --- 3F. Hub Features ---
+# --- 1. Define VC and Company Hubs --- based on Hubs.R
 vc_hubs <- c(
   "san_francisco", "new_york", "boston", "london",
   "san_diego", "los_angeles", "washington", "chicago",
@@ -327,15 +262,13 @@ df <- df_with_coords %>%
   select(-row_id, -lat, -lon, -hq_city)
 
 # -------------------------------
-# 4. Handle Missing Data / Imputation
+# 3. Handle Missing Data / Imputation
 # -------------------------------
 # Create indicator columns
 df <- df %>%
   mutate(
-    # has_revenue_data           = ifelse(is.na(revenue), 0, 1),
     has_ebitda_data            = ifelse(is.na(ebitda), 0, 1),
     has_employee_cagr_data          = ifelse(is.na(employee_cagr), 0, 1),
-    # has_employee_yoy_growth_data    = ifelse(is.na(employee_yoy_growth), 0, 1),
     has_revenue_growth_data        = ifelse(is.na(revenue_growth_percent), 0, 1),
     has_employee_data          = ifelse(is.na(employees), 0, 1)
   )
@@ -376,7 +309,7 @@ df$first_financing_deal_class[is.na(df$first_financing_deal_class) |
                                 df$first_financing_deal_class == ""] <- "No financing"
 
 # -------------------------------
-# 5. Remove Columns with High Missingness (>80%) if any
+# 4. Remove Columns with High Missingness (>80%) if any
 # -------------------------------
 missing_pct <- colMeans(is.na(df)) * 100
 high_missing_cols <- names(missing_pct[missing_pct > 80])
@@ -386,21 +319,21 @@ df <- df %>% select(-any_of(high_missing_cols))
 df$status <- as.factor(df$status)
 
 # -------------------------------
-# 6. Remove Highly Correlated Features
+# 5. Remove Highly Correlated Features
 # -------------------------------
 
-# numeric_df <- df %>%
-#   select(where(is.numeric))
-# 
-# corr_mat <- cor(numeric_df, use = "complete.obs")
-# high_cor <- findCorrelation(corr_mat, cutoff = 0.9)
-# names(numeric_df)[high_cor]
-# # Remove those columns from df
-# df <- df %>% select(-any_of(names(numeric_df)[high_cor]))
+numeric_df <- df %>%
+  select(where(is.numeric))
+
+corr_mat <- cor(numeric_df, use = "complete.obs")
+high_cor <- findCorrelation(corr_mat, cutoff = 0.9)
+names(numeric_df)[high_cor]
+# Remove those columns from df
+df <- df %>% select(-any_of(names(numeric_df)[high_cor]))
 
 
 # -------------------------------
-# 7. Save dataset
+# 6. Save dataset
 # -------------------------------
 
 # Create a row ID in the raw dataset for later matching
