@@ -1,7 +1,7 @@
 # Digital Health Outcome
 
 **Short description.**  
-Reproducible R code to engineer features and build classification models that predict whether a digital-health company achieves a *successful* outcome (IPO/M&A/public) versus *no success* (still private without backing / out of business), using structured firmographics, financing timelines, IP/clinical indicators, and geospatial proximity to VC/company hubs. Feature engineering and models are implemented with the *tidyverse*/*tidymodels* ecosystem, with additional utilities for class imbalance, SHAP/vip explanations, and benchmarking on a fixed or sampled set of companies.
+Reproducible R code to engineer features and build classification models that predict whether a digital-health company achieves an *exit* (successful outcome) (IPO/M&A/public) versus *no exit* (still private without backing / out of business), using structured firmographics, financing timelines, IP/clinical indicators, and geospatial proximity to VC/company hubs. We only used data from before the event/outcome happened. Feature engineering and models are implemented with the *tidyverse*/*tidymodels* ecosystem, with additional utilities for class imbalance, SHAP/vip explanations, and benchmarking on a fixed or sampled set of companies.
 
 ---
 
